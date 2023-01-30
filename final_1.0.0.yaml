@@ -1,0 +1,666 @@
+swagger: '2.0'
+info:
+  title: Final
+  x-ibm-name: final
+  version: 1.0.0
+x-ibm-configuration:
+  cors:
+    enabled: true
+  gateway: datapower-api-gateway
+  type: rest
+  phase: realized
+  enforced: true
+  testable: true
+  assembly:
+    execute:
+      - switch:
+          version: 2.0.0
+          title: switch
+          case:
+            - condition: ($header("correlationId") != "6A7C7D46948648D2BE4BE4605F79841D")
+              execute:
+                - throw:
+                    version: 2.1.0
+                    title: throw
+                    name: no correlationId
+                    error-status-code: '400'
+                    message: Error no correlationId
+            - condition: ($header("originatingChannel") != "1")
+              execute:
+                - throw:
+                    version: 2.1.0
+                    title: throw
+                    name: no originatingChannel
+                    error-status-code: '400'
+                    message: no originatingChannel 1
+            - condition: ($header("channelRequestId") != '22')
+              execute:
+                - throw:
+                    version: 2.1.0
+                    title: throw
+                    message: no channelRequestId
+                    name: no channelRequestId
+                    error-status-code: '400'
+            - condition: ($header("originatingUserType") != '1')
+              execute:
+                - throw:
+                    version: 2.1.0
+                    title: throw
+                    name: no originatingUserType
+                    error-status-code: '400'
+                    message: no originatingUserType
+            - condition: ($header("originatingUserIdentifier") != '28001241602411')
+              execute:
+                - throw:
+                    version: 2.1.0
+                    title: throw
+                    name: no originatingUserIdentifier
+                    error-status-code: '400'
+                    message: no originatingUserIdentifier
+            - condition: ($header("serviceEntityId") != '1')
+              execute:
+                - throw:
+                    version: 2.1.0
+                    title: throw
+                    name: no serviceEntityId
+                    error-status-code: '400'
+                    message: no serviceEntityId
+            - condition: ($header("clientId") != '20857d7f701b8b15306ba7a157b10b32')
+              execute:
+                - throw:
+                    version: 2.1.0
+                    title: throw
+                    name: no clientId
+                    error-status-code: '400'
+                    message: no clientId
+            - condition: ($header("ServiceSlug") != 'SPRInteg-05')
+              execute:
+                - throw:
+                    version: 2.1.0
+                    title: throw
+                    name: no ServiceSlug
+                    error-status-code: '400'
+                    message: no ServiceSlug
+            - condition: $queryParameter('Code') != '1'
+              execute:
+                - throw:
+                    version: 2.1.0
+                    title: throw
+                    name: no code param
+                    error-status-code: '400'
+                    message: no code param
+            - condition: $queryParameter('ParentCode') !='0'
+              execute:
+                - throw:
+                    version: 2.1.0
+                    title: throw
+                    name: no Parent Code
+                    message: no Parent Code
+                    error-status-code: '400'
+            - otherwise: []
+      - map:
+          version: 2.0.0
+          title: map
+          inputs: {}
+          outputs:
+            output:
+              schema:
+                type: object
+                properties:
+                  usermame:
+                    type: string
+                    name: usermame
+                  oassword:
+                    type: string
+                    name: oassword
+              variable: message.body
+          actions:
+            - set: output.usermame
+              value: '"Hamza"'
+            - set: output.oassword
+              value: '"Passowrd"'
+      - invoke:
+          version: 2.2.0
+          title: invoke
+          backend-type: detect
+          header-control:
+            type: blocklist
+            values: []
+          parameter-control:
+            type: allowlist
+            values: []
+          http-version: HTTP/1.1
+          timeout: 60
+          verb: POST
+          chunked-uploads: true
+          persistent-connection: true
+          cache-response: protocol
+          cache-ttl: 900
+          stop-on-error: []
+          graphql-send-type: detect
+          websocket-upgrade: false
+          target-url: https://5fdc68cd-0564-40c2-b273-13cff5995638.mock.pstmn.io/E5
+      - parse:
+          version: 2.1.0
+          title: parse
+          parse-settings-reference:
+            default: apic-default-parsesettings
+      - switch:
+          version: 2.0.0
+          title: switch
+          case:
+            - condition: ($statusCode() = 401)
+              execute:
+                - map:
+                    version: 2.0.0
+                    title: map
+                    inputs:
+                      input:
+                        schema:
+                          description: ''
+                          type: object
+                          properties:
+                            StatusCode:
+                              type: string
+                              name: StatusCode
+                            StatusMessage:
+                              type: string
+                              name: StatusMessage
+                          example: '{"StatusCode":"401","StatusMessage":"UnAuthoried"}'
+                        variable: message.body
+                    outputs:
+                      output:
+                        schema:
+                          description: ''
+                          type: object
+                          properties:
+                            StatusCode:
+                              type: string
+                            StatusMessage:
+                              type: string
+                          example: '{"StatusCode":"401","StatusMessage":"UnAuthoried"}'
+                        variable: message.body
+                    actions:
+                      - set: output.StatusCode
+                        from: input.StatusCode
+                      - set: output.StatusMessage
+                        from: input.StatusMessage
+            - condition: ($statusCode() = 400)
+              execute:
+                - map:
+                    version: 2.0.0
+                    title: map
+                    inputs:
+                      input:
+                        schema:
+                          description: ''
+                          type: object
+                          properties:
+                            StatusCode:
+                              type: string
+                              name: StatusCode
+                            StatusMessage:
+                              type: string
+                              name: StatusMessage
+                          example: '{"StatusCode":"400","StatusMessage":"Bad Request"}'
+                        variable: message.body
+                    outputs:
+                      output:
+                        schema:
+                          description: ''
+                          type: object
+                          properties:
+                            StatusCode:
+                              type: string
+                            StatusMessage:
+                              type: string
+                          example: '{"StatusCode":"400","StatusMessage":"Bad Request"}'
+                        variable: message.body
+                    actions:
+                      - set: output.StatusCode
+                        from: input.StatusCode
+                      - set: output.StatusMessage
+                        from: input.StatusMessage
+                    options:
+                      mapEmulateV4EmptyJSONObject: false
+                      mapEmulateV4DefaultRequiredProps: false
+                      mapEnablePostProcessingJSON: false
+                      mapReferenceLimit: 1
+            - condition: ($statusCode() = 200)
+              execute:
+                - map:
+                    version: 2.0.0
+                    title: map
+                    inputs:
+                      input:
+                        schema:
+                          description: ''
+                          type: object
+                          properties:
+                            correlationId:
+                              type: string
+                            originatingChannel:
+                              type: string
+                            channelRequestId:
+                              type: string
+                            originatingUserType:
+                              type: string
+                            originatingUserIdentifier:
+                              type: string
+                            serviceEntityId:
+                              type: string
+                            ServiceSlug:
+                              type: string
+                          example: >-
+                            {"correlationId":"6A7C7D46948648D2BE4BE4605F79841D","originatingChannel":"1","channelRequestId":"22","originatingUserType":"1","originatingUserIdentifier":"28001241602411","serviceEntityId":"1","ServiceSlug":"SPRInteg-03"}
+                        variable: request.headers
+                        content: application/json
+                    outputs:
+                      output:
+                        schema:
+                          description: ''
+                          type: object
+                          properties:
+                            GovTalkMessage:
+                              type: object
+                              properties:
+                                '@xmlns':
+                                  type: string
+                                  name: '@xmlns'
+                                EnvelopeVersion:
+                                  type: string
+                                  name: EnvelopeVersion
+                                Header:
+                                  type: object
+                                  properties:
+                                    MessageDetails:
+                                      type: object
+                                      properties:
+                                        Class:
+                                          type: string
+                                          name: Class
+                                        Qualifier:
+                                          type: string
+                                          name: Qualifier
+                                        Function:
+                                          type: string
+                                          name: Function
+                                      name: MessageDetails
+                                  name: Header
+                                Body:
+                                  type: object
+                                  properties:
+                                    Message:
+                                      type: object
+                                      properties:
+                                        '@xmlns':
+                                          type: string
+                                          name: '@xmlns'
+                                        Header:
+                                          type: object
+                                          properties:
+                                            correlationId:
+                                              type: string
+                                              name: correlationId
+                                            originatingChannel:
+                                              type: string
+                                              name: originatingChannel
+                                            channelRequestId:
+                                              type: string
+                                              name: channelRequestId
+                                            originatingUserType:
+                                              type: string
+                                              name: originatingUserType
+                                            originatingUserIdentifier:
+                                              type: string
+                                              name: originatingUserIdentifier
+                                            serviceEntityId:
+                                              type: string
+                                              name: serviceEntityId
+                                            ServiceSlug:
+                                              type: string
+                                              name: ServiceSlug
+                                          name: Header
+                                        Data:
+                                          type: object
+                                          properties:
+                                            '@gzip':
+                                              type: string
+                                              name: '@gzip'
+                                            '@encrypted':
+                                              type: string
+                                              name: '@encrypted'
+                                            '@xmlns':
+                                              type: string
+                                              name: '@xmlns'
+                                            HusbandNID:
+                                              type: string
+                                              name: HusbandNID
+                                            WifeNID:
+                                              type: string
+                                              name: WifeNID
+                                            DocType:
+                                              type: string
+                                              name: DocType
+                                          name: Data
+                                      name: Message
+                                  name: Body
+                              name: GovTalkMessage
+                          example: >-
+                            {"GovTalkMessage":{"@xmlns":"http://www.govtalk.gov.uk/CM/envelope","EnvelopeVersion":"2.0","Header":{"MessageDetails":{"Class":"G2G_PPO_InquireDocStatus","Qualifier":"request","Function":"submit"}},"Body":{"Message":{"@xmlns":"urn:gg:eg:envelope:request:v1","Header":{"correlationId":"6A7C7D46948648D2BE4BE4605F79841D","originatingChannel":"1","channelRequestId":"22","originatingUserType":"1","originatingUserIdentifier":"28001241602411","serviceEntityId":"1","ServiceSlug":"SPRInteg-03"},"Data":{"@gzip":"gzip1","@encrypted":"encrypted1","@xmlns":"urn:data:request","HusbandNID":"26309172800695","WifeNID":"26509182700665","DocType":"1"}}}}}
+                        variable: message.body
+                        content: application/json
+                    actions:
+                      - set: output.GovTalkMessage.@xmlns
+                        value: ' "http://www.govtalk.gov.uk/CM/envelope"'
+                      - set: output.GovTalkMessage.EnvelopeVersion
+                        value: '"2.0"'
+                      - set: output.GovTalkMessage.Header.MessageDetails.Class
+                        value: '"G2G_PPO_InquireDocStatus"'
+                      - set: output.GovTalkMessage.Header.MessageDetails.Qualifier
+                        value: '"request"'
+                      - set: output.GovTalkMessage.Header.MessageDetails.Function
+                        value: '"submit"'
+                      - set: output.GovTalkMessage.Body.Message.@xmlns
+                        value: '"urn:gg:eg:envelope:request:v1"'
+                      - set: output.GovTalkMessage.Body.Message.Data.@gzip
+                        value: '"gzip1"'
+                      - set: output.GovTalkMessage.Body.Message.Data.@encrypted
+                        value: '"encrypted1"'
+                      - set: output.GovTalkMessage.Body.Message.Data.@xmlns
+                        value: '"urn:data:request"'
+                      - set: output.GovTalkMessage.Body.Message.Data.HusbandNID
+                        value: '"26309172800695"'
+                      - set: output.GovTalkMessage.Body.Message.Data.WifeNID
+                        value: '"26509182700665"'
+                      - set: output.GovTalkMessage.Body.Message.Data.DocType
+                        value: '"1"'
+                      - set: >-
+                          output.GovTalkMessage.Body.Message.Header.correlationId
+                        from: input.correlationId
+                      - set: >-
+                          output.GovTalkMessage.Body.Message.Header.originatingChannel
+                        from: input.originatingChannel
+                      - set: >-
+                          output.GovTalkMessage.Body.Message.Header.channelRequestId
+                        from: input.channelRequestId
+                      - set: >-
+                          output.GovTalkMessage.Body.Message.Header.originatingUserType
+                        from: input.originatingUserType
+                      - set: >-
+                          output.GovTalkMessage.Body.Message.Header.originatingUserIdentifier
+                        from: input.originatingUserIdentifier
+                      - set: >-
+                          output.GovTalkMessage.Body.Message.Header.serviceEntityId
+                        from: input.serviceEntityId
+                      - set: output.GovTalkMessage.Body.Message.Header.ServiceSlug
+                        from: input.ServiceSlug
+                - invoke:
+                    version: 2.2.0
+                    title: invoke
+                    backend-type: detect
+                    header-control:
+                      type: blocklist
+                      values: []
+                    parameter-control:
+                      type: allowlist
+                      values: []
+                    http-version: HTTP/1.1
+                    timeout: 60
+                    verb: POST
+                    chunked-uploads: true
+                    persistent-connection: true
+                    cache-response: protocol
+                    cache-ttl: 900
+                    stop-on-error: []
+                    graphql-send-type: detect
+                    websocket-upgrade: false
+                    target-url: >-
+                      https://5fdc68cd-0564-40c2-b273-13cff5995638.mock.pstmn.io/E3
+                - parse:
+                    version: 2.1.0
+                    title: parse
+                    parse-settings-reference:
+                      default: apic-default-parsesettings
+                - switch:
+                    version: 2.0.0
+                    title: switch
+                    case:
+                      - condition: message.body.Message.Header.responseCode = "630"
+                        execute:
+                          - map:
+                              version: 2.0.0
+                              title: map
+                              inputs: {}
+                              outputs:
+                                output:
+                                  schema:
+                                    description: ''
+                                    type: object
+                                    properties:
+                                      ResponseMessage:
+                                        type: string
+                                        name: ResponseMessage
+                                      ResponseCode:
+                                        type: string
+                                        name: ResponseCode
+                                      LookupValues:
+                                        type: array
+                                        items:
+                                          required: []
+                                          properties: {}
+                                          type: object
+                                        name: LookupValues
+                                    example: >-
+                                      {"ResponseMessage":"The attribute[Code] is
+                                      empty or
+                                      invalid","ResponseCode":"300","LookupValues":[]}
+                                  variable: message.body
+                                  content: application/json
+                              actions:
+                                - set: output.ResponseMessage
+                                  value: '"The attribute[Code] is empty or invalid"'
+                                - set: output.ResponseCode
+                                  value: '"300"'
+                                - set: output.LookupValues
+                                  value: '[]'
+                      - condition: message.body.Message.Header.responseCode = "200"
+                        execute:
+                          - map:
+                              version: 2.0.0
+                              title: map
+                              inputs:
+                                input:
+                                  schema:
+                                    description: ''
+                                    type: object
+                                    properties:
+                                      Message:
+                                        type: object
+                                        properties:
+                                          '@xmlns':
+                                            type: string
+                                            name: '@xmlns'
+                                          Header:
+                                            type: object
+                                            properties:
+                                              correlationId:
+                                                type: string
+                                                name: correlationId
+                                              originatingChannel:
+                                                type: string
+                                                name: originatingChannel
+                                              channelRequestId:
+                                                type: string
+                                                name: channelRequestId
+                                              originatingUserType:
+                                                type: string
+                                                name: originatingUserType
+                                              originatingUserIdentifier:
+                                                type: string
+                                                name: originatingUserIdentifier
+                                              serviceEntityId:
+                                                type: string
+                                                name: serviceEntityId
+                                              ServiceSlug:
+                                                type: string
+                                                name: ServiceSlug
+                                              responseCode:
+                                                type: string
+                                                name: responseCode
+                                            name: Header
+                                          Data:
+                                            type: object
+                                            properties:
+                                              '@encrypted':
+                                                type: string
+                                                name: '@encrypted'
+                                              '@gzip':
+                                                type: string
+                                                name: '@gzip'
+                                              '@xmlns':
+                                                type: string
+                                                name: '@xmlns'
+                                              MinutesOfValidity:
+                                                type: string
+                                                name: MinutesOfValidity
+                                              LookupValues:
+                                                type: array
+                                                items:
+                                                  properties:
+                                                    Code:
+                                                      type: string
+                                                      name: Code
+                                                    Description:
+                                                      type: string
+                                                      name: Description
+                                                  type: object
+                                                name: LookupValues
+                                              ResponseCode:
+                                                type: string
+                                                name: ResponseCode
+                                              ResponseMessage:
+                                                type: string
+                                                name: ResponseMessage
+                                            name: Data
+                                        name: Message
+                                    example: >-
+                                      {"Message":{"@xmlns":"urn:gg:eg:envelope:response:v1","Header":{"correlationId":"A1AD7F7DF1204F809F7E7FA7402651A1","originatingChannel":"1","channelRequestId":"22","originatingUserType":"1","originatingUserIdentifier":"28001241602411","serviceEntityId":"1","ServiceSlug":"SPRInteg-05","responseCode":"200"},"Data":{"@encrypted":"no","@gzip":"no","@xmlns":"urn:data:response","MinutesOfValidity":"2000","LookupValues":[{"Code":"1","Description":"وثيقة
+                                      زواج
+                                      مسلمين"},{"Code":"2","Description":"وثيقة
+                                      طالق"},{"Code":"3","Description":"مراجعة"},{"Code":"4","Description":"تصادق"},{"Code":"5","Description":"زواج
+                                      غير
+                                      مسلمين"}],"ResponseCode":"200","ResponseMessage":"Success"}}}
+                                  variable: message.body
+                              outputs:
+                                output:
+                                  schema:
+                                    description: ''
+                                    type: object
+                                    properties:
+                                      ResponseMessage:
+                                        type: string
+                                        name: ResponseMessage
+                                      ResponseCode:
+                                        type: string
+                                        name: ResponseCode
+                                      LookupValues:
+                                        type: array
+                                        items:
+                                          properties:
+                                            Code:
+                                              type: string
+                                              name: Code
+                                            Description:
+                                              type: string
+                                              name: Description
+                                          type: object
+                                        name: LookupValues
+                                    example: >-
+                                      {"ResponseMessage":"Success","ResponseCode":"200","LookupValues":[{"Code":"1","Description":"وثيقة
+                                      زواج
+                                      مسلمين"},{"Code":"2","Description":"وثيقة
+                                      طلاق"},{"Code":"3","Description":"مراجعة"},{"Code":"4","Description":"تصادق"},{"Code":"5","Description":"زواج
+                                      غير مسلمين"}]}
+                                  variable: message.body
+                              actions:
+                                - set: output.ResponseCode
+                                  from: input.Message.Data.ResponseCode
+                                - set: output.ResponseMessage
+                                  from: input.Message.Data.ResponseMessage
+                                - create: output.LookupValues
+                                  foreach: input.Message.Data.LookupValues
+                                  from: input.Message.Data.LookupValues
+                                  actions:
+                                    - set: $item
+                                      from: $item
+    finally: []
+  properties:
+    target-url:
+      value: http://example.com/operation-name
+      description: The URL of the target service
+      encoded: false
+  activity-log:
+    enabled: true
+    success-content: activity
+    error-content: payload
+basePath: /final
+paths:
+  /:
+    get:
+      responses:
+        '200':
+          description: success
+          schema:
+            type: string
+      consumes: []
+      produces: []
+    put:
+      responses:
+        '200':
+          description: success
+          schema:
+            type: string
+      consumes: []
+      produces: []
+    post:
+      responses:
+        '200':
+          description: success
+          schema:
+            type: string
+      consumes: []
+      produces: []
+    delete:
+      responses:
+        '200':
+          description: success
+          schema:
+            type: string
+      consumes: []
+      produces: []
+    head:
+      responses:
+        '200':
+          description: success
+          schema:
+            type: string
+      consumes: []
+      produces: []
+    patch:
+      responses:
+        '200':
+          description: success
+          schema:
+            type: string
+      consumes: []
+      produces: []
+securityDefinitions:
+  clientID:
+    type: apiKey
+    in: header
+    name: X-IBM-Client-Id
+security:
+  - clientID: []
+schemes:
+  - https

@@ -1,0 +1,318 @@
+swagger: '2.0'
+info:
+  title: example1
+  x-ibm-name: example1
+  version: 1.0.0
+x-ibm-configuration:
+  cors:
+    enabled: true
+  gateway: datapower-api-gateway
+  type: rest
+  phase: realized
+  enforced: true
+  testable: true
+  assembly:
+    execute:
+      - switch:
+          version: 2.0.0
+          title: switch
+          case:
+            - condition: $not($queryParameter('name'))
+              execute:
+                - throw:
+                    version: 2.1.0
+                    title: throw
+                    name: Name_Error
+            - condition: $not($queryParameter('id'))
+              execute:
+                - throw:
+                    version: 2.1.0
+                    title: throw
+                    name: ID_Error
+            - otherwise:
+                - map:
+                    version: 2.0.0
+                    title: map
+                    inputs:
+                      input:
+                        schema:
+                          type: object
+                          properties:
+                            name:
+                              type: string
+                              name: name
+                            id:
+                              type: string
+                              name: id
+                        variable: request.parameters
+                        content: application/json
+                    outputs:
+                      output:
+                        schema:
+                          type: object
+                          properties:
+                            name:
+                              type: string
+                              name: name
+                            id:
+                              type: string
+                              name: id
+                        variable: message.body
+                        content: application/json
+                    actions:
+                      - set: output.name
+                        from: input.name
+                      - set: output.id
+                        from: input.id
+                - invoke:
+                    version: 2.2.0
+                    title: invoke
+                    backend-type: detect
+                    header-control:
+                      type: blocklist
+                      values: []
+                    parameter-control:
+                      type: allowlist
+                      values: []
+                    http-version: HTTP/1.1
+                    timeout: 60
+                    verb: POST
+                    chunked-uploads: true
+                    persistent-connection: true
+                    cache-response: protocol
+                    cache-ttl: 900
+                    stop-on-error: []
+                    graphql-send-type: detect
+                    websocket-upgrade: false
+                    target-url: >-
+                      https://8ab6e79d-0d38-40d8-a3fc-7cc7e5c95f5d.mock.pstmn.io/books/add/
+                - parse:
+                    version: 2.1.0
+                    title: parse
+                    parse-settings-reference:
+                      default: apic-default-parsesettings
+                - map:
+                    version: 2.0.0
+                    title: map
+                    inputs:
+                      input:
+                        schema:
+                          description: ''
+                          type: object
+                          properties:
+                            status:
+                              type: number
+                              name: status
+                            message:
+                              type: string
+                              name: message
+                            book:
+                              type: object
+                              properties:
+                                title:
+                                  type: string
+                                  name: title
+                                isbn:
+                                  type: string
+                                  name: isbn
+                                url:
+                                  type: string
+                                  name: url
+                                authorsIds:
+                                  type: array
+                                  items:
+                                    type: number
+                                  name: authorsIds
+                                publishDate:
+                                  type: string
+                                  name: publishDate
+                                genresIds:
+                                  type: array
+                                  items:
+                                    type: number
+                                  name: genresIds
+                              name: book
+                          example: "{\r\n    \"status\": 200,\r\n    \"message\": \"The Book added successfully\",\r\n    \"book\": {\r\n        \"title\": \"book 1\",\r\n        \"isbn\": \"ISBN 10: 0768374464\",\r\n        \"url\": \"localhost:3000/assets/book.pdf\",\r\n        \"authorsIds\": [\r\n            4,\r\n            5\r\n        ],\r\n        \"publishDate\": \"2012-04-23T18:25:43.511Z\",\r\n        \"genresIds\": [\r\n            2,\r\n            3\r\n        ]\r\n    }\r\n}"
+                        variable: message.body
+                        content: application/json
+                      input_1:
+                        schema:
+                          type: object
+                          properties:
+                            name:
+                              type: string
+                              name: name
+                            id:
+                              type: string
+                              name: id
+                        variable: request.parameters
+                        content: application/json
+                    outputs:
+                      output:
+                        schema:
+                          description: ''
+                          type: object
+                          properties:
+                            status:
+                              type: number
+                              name: status
+                            message:
+                              type: string
+                              name: message
+                            book:
+                              type: object
+                              properties:
+                                title:
+                                  type: string
+                                  name: title
+                                isbn:
+                                  type: string
+                                  name: isbn
+                                url:
+                                  type: string
+                                  name: url
+                                authorsIds:
+                                  type: array
+                                  items:
+                                    type: number
+                                  name: authorsIds
+                                publishDate:
+                                  type: string
+                                  name: publishDate
+                              name: book
+                          example: >-
+                            {"status":200,"message":"The Book added
+                            successfully","book":{"title":"book 1","isbn":"ISBN
+                            10:
+                            0768374464","url":"localhost:3000/assets/book.pdf","authorsIds":[4,5],"publishDate":"2012-04-23T18:25:43.511Z","genresIds":[2,3]}}
+                        variable: message.body
+                        content: application/json
+                      output_1:
+                        schema:
+                          type: object
+                          properties:
+                            name:
+                              type: string
+                              name: name
+                            id:
+                              type: string
+                              name: id
+                        variable: message.body
+                        content: application/json
+                    actions:
+                      - set: output.status
+                        from: input.status
+                      - set: output.message
+                        from: input.message
+                      - set: output.book.title
+                        from: input.book.title
+                      - set: output.book.isbn
+                        from: input.book.isbn
+                      - set: output.book.url
+                        from: input.book.url
+                      - set: output.book.authorsIds
+                        from: input.book.authorsIds
+                      - set: output.book.publishDate
+                        from: input.book.publishDate
+                      - set: output_1.name
+                        from: input_1.name
+                      - set: output_1.id
+                        from: input_1.id
+    catch:
+      - errors:
+          - Name_Error
+        execute:
+          - set-variable:
+              version: 2.0.0
+              title: set-name-error
+              actions:
+                - set: message.status.code
+                  value: 301
+                  type: number
+                - set: message.body
+                  value: '{"httpMessage": "The name is missing"}'
+                  type: string
+      - errors:
+          - ID_Error
+        execute:
+          - set-variable:
+              version: 2.0.0
+              title: set-variable
+              actions:
+                - set: message.status.code
+                  value: 301
+                  type: number
+                - set: message.body
+                  value: '{"httpMessage":"The Id is missing"}'
+                  type: string
+    finally: []
+  properties:
+    target-url:
+      value: http://example.com/operation-name
+      description: The URL of the target service
+      encoded: false
+  activity-log:
+    enabled: true
+    success-content: activity
+    error-content: payload
+basePath: /example1
+paths:
+  /:
+    get:
+      responses:
+        '200':
+          description: success
+          schema:
+            type: string
+      consumes: []
+      produces: []
+    put:
+      responses:
+        '200':
+          description: success
+          schema:
+            type: string
+      consumes: []
+      produces: []
+    post:
+      responses:
+        '200':
+          description: success
+          schema:
+            type: string
+      consumes: []
+      produces: []
+      parameters: []
+    delete:
+      responses:
+        '200':
+          description: success
+          schema:
+            type: string
+      consumes: []
+      produces: []
+    head:
+      responses:
+        '200':
+          description: success
+          schema:
+            type: string
+      consumes: []
+      produces: []
+    patch:
+      responses:
+        '200':
+          description: success
+          schema:
+            type: string
+      consumes: []
+      produces: []
+securityDefinitions:
+  clientID:
+    type: apiKey
+    in: header
+    name: X-IBM-Client-Id
+security:
+  - clientID: []
+schemes:
+  - https
